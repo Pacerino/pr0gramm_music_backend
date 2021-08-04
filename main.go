@@ -4,8 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os"
+	"strconv"
+
+	"github.com/pacerino/pr0gramm_music_backend/pkg"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -32,17 +36,6 @@ type Items struct {
 	NoData int    `json:"noData" gorm:"column:noData"`
 }
 
-type Votes struct {
-	gorm.Model
-	SauceID uint   `json:"sauceID" gorm:"not null"`
-	VoteID  string `json:"voteID" gorm:"not null;unique"`
-}
-
-type GormErr struct {
-	Number  int    `json:"Number"`
-	Message string `json:"Message"`
-}
-
 var db *gorm.DB
 
 func initDB() {
@@ -53,28 +46,47 @@ func initDB() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	db.AutoMigrate(&Items{}, &Votes{})
+	db.AutoMigrate(&Items{})
 }
 
 func main() {
 	godotenv.Load()
 	router := mux.NewRouter()
 	// Read
-	router.HandleFunc("/items/{Id}", getItem).Methods("GET")
+	router.HandleFunc("/item/{Id}", getItem).Methods("GET")
 	// Read-all
 	router.HandleFunc("/items", getItems).Methods("GET")
-	// Put-Vote
-	router.HandleFunc("/vote", putVote).Methods("POST")
 	initDB()
 
 	log.Fatal(http.ListenAndServe(":8080", router))
+	defer db.Close()
 }
 
 func getItems(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var items []Items
+	var pagination pkg.Pagination
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if limit, _ := strconv.Atoi(r.FormValue("limit")); limit > 0 {
+		pagination.Limit = limit
+	} else {
+		pagination.Limit = 10
+	}
+
+	if page, _ := strconv.Atoi(r.FormValue("page")); page > 0 {
+		pagination.Page = page
+	} else {
+		pagination.Page = 1
+	}
+
+	sort := r.FormValue("sort")
+	pagination.Sort = sort
+
 	db.Find(&items)
-	json.NewEncoder(w).Encode(items)
+	db.Scopes(paginate(items, &pagination, db)).Find(&items)
+	pagination.Rows = items
+	json.NewEncoder(w).Encode(pagination)
 }
 
 func getItem(w http.ResponseWriter, r *http.Request) {
@@ -87,21 +99,16 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(items)
 }
 
-func putVote(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var vote Votes
-	json.NewDecoder(r.Body).Decode(&vote)
-	if err := db.Create(&Votes{SauceID: vote.SauceID, VoteID: fmt.Sprintf("%s_%d", vote.VoteID, vote.SauceID)}); err != nil {
-		// Source: https://github.com/go-gorm/gorm/issues/4037#issuecomment-881834378
-		byteErr, _ := json.Marshal(err.Error)
-		var newError GormErr
-		json.Unmarshal((byteErr), &newError)
-		if newError.Number == 1062 {
-			json.NewEncoder(w).Encode(ErrAlreadyVoted)
-		} else {
-			log.Fatalln(newError)
-		}
-	} else {
-		json.NewEncoder(w).Encode(vote)
+func paginate(value interface{}, pagination *pkg.Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
+	var totalRows int64
+	db.Model(value).Count(&totalRows)
+
+	pagination.TotalRows = totalRows
+	totalPages := int(math.Round(float64(totalRows) / float64(pagination.Limit)))
+	fmt.Println(pagination.Limit, totalRows)
+	pagination.TotalPages = totalPages
+
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort())
 	}
 }
