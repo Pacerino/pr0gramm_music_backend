@@ -1,15 +1,24 @@
-#build stage
-FROM golang:alpine AS builder
-RUN apk add --no-cache git
-WORKDIR /go/src/app
-COPY . .
-RUN go get -d -v ./...
-RUN go build -o /go/bin/app -v ./...
+FROM golang:1.16-alpine
 
-#final stage
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-COPY --from=builder /go/bin/app /app
-ENTRYPOINT /app
-LABEL Name=pr0grammmusicbackend Version=0.0.1
+RUN apk add --no-cache git
+
+# Set the Current Working Directory inside the container
+WORKDIR /app/pr0backend
+
+# We want to populate the module cache based on the go.{mod,sum} files.
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
+COPY . .
+
+# Build the Go app
+RUN go build -o ./out/pr0backend .
+
+
+# This container exposes port 8080 to the outside world
 EXPOSE 8080
+
+# Run the binary program produced by `go install`
+CMD ["./out/pr0backend"]
