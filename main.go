@@ -58,6 +58,7 @@ func main() {
 	router.HandleFunc("/items", getItems).Methods("GET")
 	initDB()
 
+	log.Println("Listen to :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 	defer db.Close()
 }
