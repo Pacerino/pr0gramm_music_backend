@@ -15,6 +15,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 type Tabler interface {
@@ -59,7 +60,13 @@ func main() {
 	initDB()
 
 	log.Println("Listen to :8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	c := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowCredentials: true,
+    })
+
+    handler := c.Handler(router)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 	defer db.Close()
 }
 
