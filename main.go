@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/jinzhu/now"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
@@ -57,15 +59,17 @@ func main() {
 	router.HandleFunc("/item/{Id}", getItem).Methods("GET")
 	// Read-all
 	router.HandleFunc("/items", getItems).Methods("GET")
+	// Read-all
+	router.HandleFunc("/stats", getStats).Methods("GET")
 	initDB()
 
 	log.Println("Listen to :8080")
 	c := cors.New(cors.Options{
-        AllowedOrigins: []string{"*"},
-        AllowCredentials: true,
-    })
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
 
-    handler := c.Handler(router)
+	handler := c.Handler(router)
 	log.Fatal(http.ListenAndServe(":8080", handler))
 	defer db.Close()
 }
@@ -105,6 +109,24 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 	var items Items
 	db.First(&items, id)
 	json.NewEncoder(w).Encode(items)
+}
+
+func getStats(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	bearer := "Bearer " + os.Getenv("ACR_JWT")
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://eu-api-v2.acrcloud.com/api/base-projects/27121/day-stat?start=%s&end=%s", now.BeginningOfMonth().Format("2006-01-02"), now.EndOfMonth().Format("2006-01-02")), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0")
+	req.Header.Add("Authorization", bearer)
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer r.Body.Close()
+	io.Copy(w, resp.Body)
 }
 
 func paginate(value interface{}, pagination *pkg.Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
