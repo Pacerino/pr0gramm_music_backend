@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/pacerino/pr0gramm_music_backend/pkg"
 
@@ -37,6 +38,11 @@ type Items struct {
 	Artist string `json:"artist" gorm:"column:artist"`
 	Url    string `json:"url" gorm:"column:url"`
 	NoData int    `json:"noData" gorm:"column:noData"`
+}
+
+type DateRange struct {
+	Start string
+	End   string
 }
 
 var db *gorm.DB
@@ -77,7 +83,6 @@ func main() {
 func getItems(w http.ResponseWriter, r *http.Request) {
 	var items []Items
 	var pagination pkg.Pagination
-
 	w.Header().Set("Content-Type", "application/json")
 
 	if limit, _ := strconv.Atoi(r.FormValue("limit")); limit > 0 {
@@ -115,7 +120,20 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	bearer := "Bearer " + os.Getenv("ACR_JWT")
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://eu-api-v2.acrcloud.com/api/base-projects/27121/day-stat?start=%s&end=%s", now.BeginningOfMonth().Format("2006-01-02"), now.EndOfMonth().Format("2006-01-02")), nil)
+	var dateRange = DateRange{}
+	if start, err := time.Parse("2006-01-02", r.FormValue("start")); err != nil {
+		dateRange.Start = now.BeginningOfMonth().Format("2006-01-02")
+	} else {
+		dateRange.Start = start.Format("2006-01-02")
+	}
+
+	if end, err := time.Parse("2006-01-02", r.FormValue("end")); err != nil {
+		dateRange.End = now.EndOfMonth().Format("2006-01-02")
+	} else {
+		dateRange.End = end.Format("2006-01-02")
+	}
+	fmt.Println(dateRange.Start, dateRange.End)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://eu-api-v2.acrcloud.com/api/base-projects/27121/day-stat?start=%s&end=%s", dateRange.Start, dateRange.End), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
