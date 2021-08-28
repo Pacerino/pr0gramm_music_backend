@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 
+	"github.com/gocolly/colly"
 	"github.com/pacerino/pr0gramm_music_backend/pkg"
 
 	"github.com/gorilla/mux"
@@ -45,6 +48,17 @@ type DateRange struct {
 	End   string
 }
 
+type ApiResponse struct {
+	Success bool           `json:"success"`
+	Message string         `json:"message"`
+	Data    AHAAPIResponse `json:"data"`
+}
+
+type CrawlLinks struct {
+	Spotify string `json:"spotify"`
+	Deezer  string `json:"deezer"`
+}
+
 var db *gorm.DB
 
 func initDB() {
@@ -67,6 +81,8 @@ func main() {
 	router.HandleFunc("/items", getItems).Methods("GET")
 	// Read-all
 	router.HandleFunc("/stats", getStats).Methods("GET")
+	// Crawl Links by ID
+	router.HandleFunc("/crawl/{Id}", crawlLinks).Methods("GET")
 	initDB()
 
 	log.Println("Listen to :8080")
@@ -145,6 +161,96 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	io.Copy(w, resp.Body)
+}
+
+func crawlLinks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id := params["Id"]
+	var Links CrawlLinks
+	var response ApiResponse
+	var tempLinks []string
+	var ahaResponse AHAAPIResponse
+
+	if len(id) > 0 {
+		c := colly.NewCollector()
+		reqLink := fmt.Sprintf(`https://aha-music.com/%s`, id)
+
+		c.OnHTML("a.resource-external-link", func(e *colly.HTMLElement) {
+			tempLinks = append(tempLinks, e.Attr("href"))
+		})
+
+		c.Visit(reqLink)
+
+		spotifyRegex, err := regexp.Compile(`(?mi)^(https:\/\/open.spotify.com\/track\/)(.*)$`)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		deezerRegex, err := regexp.Compile(`(?mi)^https?:\/\/(?:www\.)?deezer\.com\/(track|album|playlist)\/(\d+)$`)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, link := range tempLinks {
+			if spotifyLink := spotifyRegex.FindString(link); len(spotifyLink) > 0 {
+				Links.Spotify = spotifyLink
+			}
+
+			if deezerLink := deezerRegex.FindString(link); len(deezerLink) > 0 {
+				Links.Deezer = deezerLink
+			}
+
+		}
+		if len(Links.Spotify) > 0 {
+			ahaResponse = callAHAAPI(Links.Spotify)
+			response.Success = true
+		} else if len(Links.Deezer) > 0 {
+			ahaResponse = callAHAAPI(Links.Deezer)
+			response.Success = true
+		} else {
+			response.Success = false
+			response.Message = "Could not find Deezer or Spotify link"
+		}
+	} else {
+		response.Success = false
+		response.Message = "Missing ID"
+	}
+	if response.Success {
+		response.Data = ahaResponse
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func callAHAAPI(sourceLink string) AHAAPIResponse {
+	requestString := fmt.Sprintf(`https://metadata.aha-music.com/v1-alpha.1/links?url=%s`, sourceLink)
+	httpClient := http.Client{
+		Timeout: time.Second * 2,
+	}
+	r, err := http.NewRequest("GET", requestString, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := httpClient.Do(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	response := AHAAPIResponse{}
+	jsonErr := json.Unmarshal(body, &response)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+	return response
 }
 
 func paginate(value interface{}, pagination *pkg.Pagination, db *gorm.DB) func(db *gorm.DB) *gorm.DB {
