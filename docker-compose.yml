@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  chrome:
+    image: browserless/chrome
+    restart: unless-stopped
+    environment: 
+      TOKEN:
+    ports:
+      - "8080:8080"
+  pr0music:
+    image: "reg.s-c.systems/pr0/pr0music_web_backend:latest"
+    restart: unless-stopped
+    depends_on: 
+      - chrome
+    environment:
+        MYSQL_HOST:
+        MYSQL_DATABASE:
+        MYSQL_USER:
+        MYSQL_PASSWORD:
+        ACR_JWT:
+        CHROME_WS: ws://chrome:3000
+    ports:
+        - "8080:8080"

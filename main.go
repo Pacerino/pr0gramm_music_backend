@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -13,7 +12,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gocolly/colly"
+	"github.com/go-rod/rod"
 	"github.com/pacerino/pr0gramm_music_backend/pkg"
 
 	"github.com/gorilla/mux"
@@ -169,19 +168,13 @@ func crawlLinks(w http.ResponseWriter, r *http.Request) {
 	id := params["Id"]
 	var Links CrawlLinks
 	var response ApiResponse
-	var tempLinks []string
 	var ahaResponse AHAAPIResponse
 
 	if len(id) > 0 {
-		c := colly.NewCollector()
 		reqLink := fmt.Sprintf(`https://aha-music.com/%s`, id)
 
-		c.OnHTML("a.resource-external-link", func(e *colly.HTMLElement) {
-			tempLinks = append(tempLinks, e.Attr("href"))
-		})
-
-		c.Visit(reqLink)
-
+		page := rod.New().ControlURL(os.Getenv("CHROME_WS")).MustConnect().MustPage(reqLink)
+		section := page.MustWaitLoad().MustElements("a.resource-external-link")
 		spotifyRegex, err := regexp.Compile(`(?mi)^(https:\/\/open.spotify.com\/track\/)(.*)$`)
 		if err != nil {
 			log.Fatal(err)
@@ -192,7 +185,8 @@ func crawlLinks(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		for _, link := range tempLinks {
+		for _, s := range section {
+			link := s.MustProperty("href").String()
 			if spotifyLink := spotifyRegex.FindString(link); len(spotifyLink) > 0 {
 				Links.Spotify = spotifyLink
 			}
@@ -224,29 +218,13 @@ func crawlLinks(w http.ResponseWriter, r *http.Request) {
 
 func callAHAAPI(sourceLink string) AHAAPIResponse {
 	requestString := fmt.Sprintf(`https://metadata.aha-music.com/v1-alpha.1/links?url=%s`, sourceLink)
-	httpClient := http.Client{
-		Timeout: time.Second * 2,
-	}
-	r, err := http.NewRequest("GET", requestString, nil)
+	page := rod.New().ControlURL(os.Getenv("CHROME_WS")).MustConnect().MustPage(requestString)
+	preTag, err := page.MustElement("pre").Text()
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := httpClient.Do(r)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if res.Body != nil {
-		defer res.Body.Close()
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
 	response := AHAAPIResponse{}
-	jsonErr := json.Unmarshal(body, &response)
+	jsonErr := json.Unmarshal([]byte(preTag), &response)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
