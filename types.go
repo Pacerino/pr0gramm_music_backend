@@ -93,6 +93,9 @@ type Metadata struct {
 	TidalID       string `json:"tidalID" gorm:"column:tidalID"`
 	ApplemusicURL string `json:"applemusicURL" gorm:"column:applemusicURL"`
 	ApplemusicID  string `json:"applemusicID" gorm:"column:applemusicID"`
+	Title         string `json:"title" gorm:"column:title"`
+	Album         string `json:"album" gorm:"column:album"`
+	Artist        string `json:"artist" gorm:"column:artist"`
 	ACRID         string `json:"acrID" gorm:"column:acrID"`
 }
 
