@@ -23,41 +23,6 @@ import (
 	"github.com/rs/cors"
 )
 
-type Tabler interface {
-	TableName() string
-}
-
-func (Items) TableName() string {
-	return "Items"
-}
-
-type Items struct {
-	// gorm.Model
-	Id     int    `json:"id" gorm:"primary_key;autoIncrement;column:id"`
-	ItemID int    `json:"itemID" gorm:"not null;column:itemID"`
-	Title  string `json:"title" gorm:"column:title"`
-	Album  string `json:"album" gorm:"column:album"`
-	Artist string `json:"artist" gorm:"column:artist"`
-	Url    string `json:"url" gorm:"column:url"`
-	NoData int    `json:"noData" gorm:"column:noData"`
-}
-
-type DateRange struct {
-	Start string
-	End   string
-}
-
-type ApiResponse struct {
-	Success bool           `json:"success"`
-	Message string         `json:"message"`
-	Data    AHAAPIResponse `json:"data"`
-}
-
-type CrawlLinks struct {
-	Spotify string `json:"spotify"`
-	Deezer  string `json:"deezer"`
-}
-
 var db *gorm.DB
 
 func initDB() {
@@ -82,6 +47,8 @@ func main() {
 	router.HandleFunc("/stats", getStats).Methods("GET")
 	// Crawl Links by ID
 	router.HandleFunc("/crawl/{Id}", crawlLinks).Methods("GET")
+	// Crawl Links by ID
+	router.HandleFunc("/info/{Id}", getLinks).Methods("GET")
 	initDB()
 
 	log.Println("Listen to :8080")
@@ -160,6 +127,15 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 	io.Copy(w, resp.Body)
+}
+
+func getLinks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var metadata Metadata
+	params := mux.Vars(r)
+	id := params["Id"]
+	db.Where("acrID = ?", id).First(&metadata)
+	json.NewEncoder(w).Encode(metadata)
 }
 
 func crawlLinks(w http.ResponseWriter, r *http.Request) {
