@@ -83,7 +83,7 @@ type Items struct {
 type Metadata struct {
 	DeezerURL     string `json:"deezerURL" gorm:"column:deezerUrl"`
 	DeezerID      string `json:"deezerID" gorm:"column:deezerID"`
-	SoundcloudURL string `json:"soundcloudURL" gorm:"column:soundcloudURL"`
+	SoundcloudURL string `json:"soundcloudURL" gorm:"column:soundcloudUrl"`
 	SoundcloudID  string `json:"soundcloudID" gorm:"column:soundcloudID"`
 	SpotifyURL    string `json:"spotifyURL" gorm:"column:spotifyURL"`
 	SpotifyID     string `json:"spotifyID" gorm:"column:spotifyID"`
