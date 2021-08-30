@@ -83,7 +83,7 @@ func getItems(w http.ResponseWriter, r *http.Request) {
 	pagination.Sort = sort
 
 	db.Find(&items)
-	db.Scopes(paginate(items, &pagination, db)).Find(&items)
+	db.Scopes(paginate(items, &pagination, db)).Where("title OR album OR artist IS NOT NULL").Find(&items)
 	pagination.Rows = items
 	json.NewEncoder(w).Encode(pagination)
 }
