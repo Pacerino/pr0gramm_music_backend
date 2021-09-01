@@ -30,11 +30,11 @@ func (p *Pagination) GetPage() int {
 func (p *Pagination) GetSort() string {
 	switch p.Sort {
 	case "asc":
-		p.Sort = "Items.id asc"
+		p.Sort = "id asc"
 	case "desc":
-		p.Sort = "Items.id desc"
+		p.Sort = "id desc"
 	default:
-		p.Sort = "Items.id asc"
+		p.Sort = "id asc"
 	}
 	return p.Sort
 }
