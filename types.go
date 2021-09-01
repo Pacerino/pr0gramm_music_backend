@@ -77,14 +77,16 @@ type Items struct {
 }
 
 type Comments struct {
-	gorm.Model
-	CommentID int        `json:"commentID" gorm:"not null;"`
-	Up        int        `json:"up" gorm:"not null;"`
-	Down      int        `json:"down" gorm:"not null;"`
-	Content   string     `json:"content" gorm:"not null;"`
-	Created   *time.Time `json:"created" gorm:"not null;"`
-	ItemID    int        `json:"itemid" gorm:"not null;"`
-	Thumb     string     `json:"thumb" gorm:"not null;"`
+	CommentID int `json:"commentID" gorm:"primarykey;not null;"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	Up        int            `json:"up" gorm:"not null;"`
+	Down      int            `json:"down" gorm:"not null;"`
+	Content   string         `json:"content" gorm:"not null;"`
+	Created   *time.Time     `json:"created" gorm:"not null;"`
+	ItemID    int            `json:"itemid" gorm:"not null;"`
+	Thumb     string         `json:"thumb" gorm:"not null;"`
 }
 
 type ItemResponse struct {
