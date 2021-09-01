@@ -1,5 +1,12 @@
 package main
 
+import (
+	"time"
+
+	"github.com/pacerino/pr0gramm_music_backend/pr0gramm"
+	"gorm.io/gorm"
+)
+
 type AHAAPIResponse struct {
 	EntityUniqueID  string `json:"entityUniqueId"`
 	UserCountry     string `json:"userCountry"`
@@ -68,6 +75,9 @@ func (Items) TableName() string {
 func (Metadata) TableName() string {
 	return "Items"
 }
+func (Comments) TableName() string {
+	return "BotComments"
+}
 
 type Items struct {
 	// gorm.Model
@@ -78,6 +88,19 @@ type Items struct {
 	Artist string `json:"artist" gorm:"column:artist"`
 	Url    string `json:"url" gorm:"column:url"`
 	NoData int    `json:"noData" gorm:"column:noData"`
+}
+
+type Comments struct {
+	Id        int        `json:"id" gorm:"primary_key;autoIncrement;column:id"`
+	Up        int        `json:"up" gorm:"not null;column:up"`
+	Down      int        `json:"down" gorm:"not null;column:down"`
+	Content   string     `json:"content" gorm:"not null;column:content"`
+	Created   *time.Time `json:"created" gorm:"not null;column:created"`
+	ItemID    int        `json:"itemid" gorm:"not null;column:itemId"`
+	Thumb     string     `json:"thumb" gorm:"not null;column:thumb"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Metadata struct {
@@ -113,4 +136,9 @@ type ApiResponse struct {
 type CrawlLinks struct {
 	Spotify string `json:"spotify"`
 	Deezer  string `json:"deezer"`
+}
+
+type Updater struct {
+	Session *pr0gramm.Session
+	After   pr0gramm.Timestamp
 }
