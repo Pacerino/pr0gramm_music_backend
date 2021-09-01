@@ -65,61 +65,46 @@ type AHAAPIResponse struct {
 	} `json:"linksByPlatform"`
 }
 
-type Tabler interface {
-	TableName() string
-}
-
-func (Items) TableName() string {
-	return "Items"
-}
-func (Metadata) TableName() string {
-	return "Items"
-}
-func (Comments) TableName() string {
-	return "BotComments"
-}
-
 type Items struct {
-	// gorm.Model
-	Id     int    `json:"id" gorm:"primary_key;autoIncrement;column:id"`
-	ItemID int    `json:"itemID" gorm:"not null;column:itemID"`
-	Title  string `json:"title" gorm:"column:title"`
-	Album  string `json:"album" gorm:"column:album"`
-	Artist string `json:"artist" gorm:"column:artist"`
-	Url    string `json:"url" gorm:"column:url"`
-	NoData int    `json:"noData" gorm:"column:noData"`
+	gorm.Model
+	ItemID   int      `json:"itemID" gorm:"not null;"`
+	Title    string   `json:"title"`
+	Album    string   `json:"album"`
+	Artist   string   `json:"artist"`
+	Url      string   `json:"url"`
+	ACRID    string   `json:"acrID"`
+	Metadata Metadata `gorm:"embedded"`
 }
 
 type Comments struct {
-	Id        int        `json:"id" gorm:"primary_key;autoIncrement;column:id"`
-	Up        int        `json:"up" gorm:"not null;column:up"`
-	Down      int        `json:"down" gorm:"not null;column:down"`
-	Content   string     `json:"content" gorm:"not null;column:content"`
-	Created   *time.Time `json:"created" gorm:"not null;column:created"`
-	ItemID    int        `json:"itemid" gorm:"not null;column:itemId"`
-	Thumb     string     `json:"thumb" gorm:"not null;column:thumb"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	gorm.Model
+	CommentID int        `json:"commentID" gorm:"not null;"`
+	Up        int        `json:"up" gorm:"not null;"`
+	Down      int        `json:"down" gorm:"not null;"`
+	Content   string     `json:"content" gorm:"not null;"`
+	Created   *time.Time `json:"created" gorm:"not null;"`
+	ItemID    int        `json:"itemid" gorm:"not null;"`
+	Thumb     string     `json:"thumb" gorm:"not null;"`
+}
+
+type ItemResponse struct {
+	Items
+	Comments `json:"comment"`
 }
 
 type Metadata struct {
-	DeezerURL     string `json:"deezerURL" gorm:"column:deezerUrl"`
-	DeezerID      string `json:"deezerID" gorm:"column:deezerID"`
-	SoundcloudURL string `json:"soundcloudURL" gorm:"column:soundcloudUrl"`
-	SoundcloudID  string `json:"soundcloudID" gorm:"column:soundcloudID"`
-	SpotifyURL    string `json:"spotifyURL" gorm:"column:spotifyURL"`
-	SpotifyID     string `json:"spotifyID" gorm:"column:spotifyID"`
-	YoutubeURL    string `json:"youtubeURL" gorm:"column:youtubeURL"`
-	YoutubeID     string `json:"youtubeID" gorm:"column:youtubeID"`
-	TidalURL      string `json:"tidalURL" gorm:"column:tidalURL"`
-	TidalID       string `json:"tidalID" gorm:"column:tidalID"`
-	ApplemusicURL string `json:"applemusicURL" gorm:"column:applemusicURL"`
-	ApplemusicID  string `json:"applemusicID" gorm:"column:applemusicID"`
-	Title         string `json:"title" gorm:"column:title"`
-	Album         string `json:"album" gorm:"column:album"`
-	Artist        string `json:"artist" gorm:"column:artist"`
-	ACRID         string `json:"acrID" gorm:"column:acrID"`
+	DeezerURL     string `json:"deezerURL"`
+	DeezerID      string `json:"deezerID" `
+	SoundcloudURL string `json:"soundcloudURL"`
+	SoundcloudID  string `json:"soundcloudID"`
+	SpotifyURL    string `json:"spotifyURL"`
+	SpotifyID     string `json:"spotifyID"`
+	YoutubeURL    string `json:"youtubeURL" `
+	YoutubeID     string `json:"youtubeID"`
+	TidalURL      string `json:"tidalURL"`
+	TidalID       string `json:"tidalID"`
+	ApplemusicURL string `json:"applemusicURL"`
+	ApplemusicID  string `json:"applemusicID"`
 }
 
 type DateRange struct {

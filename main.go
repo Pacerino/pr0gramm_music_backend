@@ -38,7 +38,7 @@ func initDB() {
 	if err != nil {
 		log.WithError(err).Fatal("Could not open connection to DB")
 	}
-	db.AutoMigrate(&Metadata{}, &Comments{})
+	db.AutoMigrate(&Comments{}, &Items{})
 }
 
 func main() {
@@ -50,8 +50,7 @@ func main() {
 	log.SetReportCaller(true)
 
 	sentryHook, err := sentry.NewHook(sentry.Options{
-		Dsn:   os.Getenv("SENTRY_DSN"),
-		Debug: true,
+		Dsn: os.Getenv("SENTRY_DSN"),
 	}, log.PanicLevel, log.FatalLevel, log.ErrorLevel)
 	if err != nil {
 		log.Error(err)
@@ -91,6 +90,7 @@ func main() {
 }
 
 func getItems(w http.ResponseWriter, r *http.Request) {
+	var itemResponse []ItemResponse
 	var items []Items
 	var pagination pkg.Pagination
 	w.Header().Set("Content-Type", "application/json")
@@ -109,10 +109,8 @@ func getItems(w http.ResponseWriter, r *http.Request) {
 
 	sort := r.FormValue("sort")
 	pagination.Sort = sort
-
-	db.Find(&items)
-	db.Scopes(paginate(items, &pagination, db)).Where("title OR album OR artist IS NOT NULL").Find(&items)
-	pagination.Rows = items
+	db.Table("Items").Select("*").Joins("LEFT JOIN BotComments BC ON BC.ItemId = Items.itemID").Scopes(paginate(items, &pagination, db)).Where("Items.title OR Items.album OR Items.artist IS NOT NULL").Scan(&itemResponse)
+	pagination.Rows = itemResponse
 	json.NewEncoder(w).Encode(pagination)
 }
 
@@ -158,11 +156,11 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 
 func getLinks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var metadata Metadata
+	var items Items
 	params := mux.Vars(r)
 	id := params["Id"]
-	db.Where("acrID = ?", id).First(&metadata)
-	json.NewEncoder(w).Encode(metadata)
+	db.Where("acrID = ?", id).First(&items)
+	json.NewEncoder(w).Encode(items)
 }
 
 func crawlLinks(w http.ResponseWriter, r *http.Request) {
@@ -271,13 +269,13 @@ func (u *Updater) Update() {
 		}
 		for _, c := range data.Comments {
 			comm := Comments{
-				Id:      int(c.Id),
-				Up:      c.Up,
-				Down:    c.Down,
-				Content: c.Content,
-				Created: &c.Created.Time,
-				ItemID:  int(c.ItemId),
-				Thumb:   c.Thumbnail,
+				CommentID: int(c.Id),
+				Up:        c.Up,
+				Down:      c.Down,
+				Content:   c.Content,
+				Created:   &c.Created.Time,
+				ItemID:    int(c.ItemId),
+				Thumb:     c.Thumbnail,
 			}
 			db.Clauses(clause.OnConflict{
 				UpdateAll: true,
