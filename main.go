@@ -90,7 +90,7 @@ func main() {
 }
 
 func getItems(w http.ResponseWriter, r *http.Request) {
-	//var itemResponse []ItemResponse
+	var itemResponse []ItemResponse
 	var items []Items
 	var pagination pkg.Pagination
 	w.Header().Set("Content-Type", "application/json")
@@ -109,8 +109,8 @@ func getItems(w http.ResponseWriter, r *http.Request) {
 
 	sort := r.FormValue("sort")
 	pagination.Sort = sort
-	db.Model(&items).Select("*").Scopes(paginate(items, &pagination, db)).Where("title OR album OR artist IS NOT NULL").Scan(&items)
-	pagination.Rows = items
+	db.Table("items").Select("items.*, comments.*").Scopes(paginate(items, &pagination, db)).Joins("LEFT JOIN comments ON items.item_id = comments.item_id").Where("items.title OR items.album OR items.artist IS NOT NULL").Find(&itemResponse)
+	pagination.Rows = itemResponse
 	json.NewEncoder(w).Encode(pagination)
 }
 
@@ -156,10 +156,10 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 
 func getLinks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var items Items
+	var items ItemResponse
 	params := mux.Vars(r)
 	id := params["Id"]
-	db.Where("acr_id = ?", id).First(&items)
+	db.Table("items").Select("items.*, comments.*").Where("items.acr_id = ?", id).Joins("LEFT JOIN comments ON items.item_id = comments.item_id").First(&items)
 	json.NewEncoder(w).Encode(items)
 }
 

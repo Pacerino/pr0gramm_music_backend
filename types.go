@@ -85,13 +85,13 @@ type Comments struct {
 	Down      int            `json:"down" gorm:"not null;"`
 	Content   string         `json:"content" gorm:"not null;"`
 	Created   *time.Time     `json:"created" gorm:"not null;"`
-	ItemID    int            `json:"itemid" gorm:"not null;"`
+	ItemID    int            `json:"-" gorm:"not null;"`
 	Thumb     string         `json:"thumb" gorm:"not null;"`
 }
 
 type ItemResponse struct {
 	Items
-	Comments `json:"comment"`
+	Comments `json:"Comment"`
 }
 
 type Metadata struct {
