@@ -67,13 +67,14 @@ type AHAAPIResponse struct {
 
 type Items struct {
 	gorm.Model
-	ItemID   int      `json:"itemID" gorm:"not null;index"`
+	ItemID   int      `json:"itemID" gorm:"primarykey;not null;index"`
 	Title    string   `json:"title"`
 	Album    string   `json:"album"`
 	Artist   string   `json:"artist"`
 	Url      string   `json:"url"`
 	ACRID    string   `json:"acrID"`
 	Metadata Metadata `gorm:"embedded"`
+	Comments Comments `json:"Comment" gorm:"foreignKey:ItemID;references:ItemID"`
 }
 
 type Comments struct {
@@ -85,13 +86,8 @@ type Comments struct {
 	Down      int            `json:"down" gorm:"not null;"`
 	Content   string         `json:"content" gorm:"not null;"`
 	Created   *time.Time     `json:"created" gorm:"not null;"`
-	ItemID    int            `json:"-" gorm:"not null;index"`
+	ItemID    int            `json:"itemID" gorm:"not null;index"`
 	Thumb     string         `json:"thumb" gorm:"not null;"`
-}
-
-type ItemResponse struct {
-	Items
-	Comments `json:"Comment"`
 }
 
 type Metadata struct {

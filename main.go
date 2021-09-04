@@ -39,7 +39,7 @@ func initDB() {
 	if err != nil {
 		log.WithError(err).Fatal("Could not open connection to DB")
 	}
-	if err := db.AutoMigrate(&Comments{}, &Items{}); err != nil {
+	if err := db.AutoMigrate(&Items{}, &Comments{}); err != nil {
 		log.WithError(err).Fatal("Could not Migrate Models!")
 	}
 }
@@ -93,7 +93,7 @@ func main() {
 }
 
 func getItems(w http.ResponseWriter, r *http.Request) {
-	var itemResponse []ItemResponse
+	//var itemResponse []ItemResponse
 	var items []Items
 	var pagination pkg.Pagination
 	w.Header().Set("Content-Type", "application/json")
@@ -112,8 +112,8 @@ func getItems(w http.ResponseWriter, r *http.Request) {
 
 	sort := r.FormValue("sort")
 	pagination.Sort = sort
-	db.Table("items").Select("items.*, comments.*").Scopes(paginate(items, &pagination, db)).Joins("LEFT JOIN comments ON items.item_id = comments.item_id").Where("items.title OR items.album OR items.artist IS NOT NULL").Find(&itemResponse)
-	pagination.Rows = itemResponse
+	db.Model(&items).Preload("Comments").Scopes(paginate(items, &pagination, db)).Where("title OR album OR artist IS NOT NULL").Find(&items)
+	pagination.Rows = items
 	json.NewEncoder(w).Encode(pagination)
 }
 
@@ -123,7 +123,7 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 	id := params["Id"]
 
 	var items Items
-	db.First(&items, id)
+	db.Preload("Comments").First(&items, id)
 	json.NewEncoder(w).Encode(items)
 }
 
@@ -159,10 +159,10 @@ func getStats(w http.ResponseWriter, r *http.Request) {
 
 func getLinks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var items ItemResponse
+	var items Items
 	params := mux.Vars(r)
 	id := params["Id"]
-	db.Table("items").Select("items.*, comments.*").Where("items.acr_id = ?", id).Joins("LEFT JOIN comments ON items.item_id = comments.item_id").First(&items)
+	db.Model(&items).Preload("Comments").Where("items.acr_id = ?", id).First(&items)
 	json.NewEncoder(w).Encode(items)
 }
 
