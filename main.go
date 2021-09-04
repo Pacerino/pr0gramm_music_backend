@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/onrik/logrus/sentry"
@@ -38,7 +39,9 @@ func initDB() {
 	if err != nil {
 		log.WithError(err).Fatal("Could not open connection to DB")
 	}
-	db.AutoMigrate(&Comments{}, &Items{})
+	if err := db.AutoMigrate(&Comments{}, &Items{}); err != nil {
+		log.WithError(err).Fatal("Could not Migrate Models!")
+	}
 }
 
 func main() {
@@ -268,6 +271,9 @@ func (u *Updater) Update() {
 			break
 		}
 		for _, c := range data.Comments {
+			if !strings.Contains(c.Content, "Es wurden") {
+				continue
+			}
 			comm := Comments{
 				CommentID: int(c.Id),
 				Up:        c.Up,
