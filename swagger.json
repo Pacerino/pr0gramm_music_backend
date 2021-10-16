@@ -1,0 +1,698 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "pr0sauce Backend API",
+    "version": "1.0",
+    "description": "API Documentation for the API Backend of the pr0sauce.info site and the @sauce bot"
+  },
+  "servers": [{ "url": "https://pr0.pa0x43.me/" }],
+  "paths": {
+    "/items": {
+      "get": {
+        "description": "Retrieve all items",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": "1"
+            },
+            "description": "Current page"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": "10"
+            },
+            "description": "Limit of shown items"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc"
+            },
+            "description": "Sort order of the items by `id`"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response of the rows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "10"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "1"
+                    },
+                    "sort": {
+                        "type": "string",
+                        "example": "id asc"
+                    },
+                    "total_rows": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "6147"
+                    },
+                    "total_pages": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "615"
+                    },
+                    "rows": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "ID": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "6146"
+                                },
+                                "CreatedAt": {
+                                    "type": "string",
+                                    "example": "0001-01-01T00:00:00Z"
+                                },
+                                "UpdatedAt": {
+                                    "type": "string",
+                                    "example": "0001-01-01T00:00:00Z"
+                                },
+                                "DeletedAt": {
+                                    "type": "string",
+                                    "format": "nullable"
+                                },
+                                "itemID": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "4812613"
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "example": "Ring Ding Dong (Nhạc chuông)"
+                                },
+                                "album": {
+                                    "type": "string",
+                                    "example": "Ring Ding Dong (Nhạc chuông)"
+                                },
+                                "artist": {
+                                    "type": "string",
+                                    "example": "SHINee"
+                                },
+                                "url": {
+                                    "type": "string",
+                                    "example": "https://www.aha-music.com/34c85975f790e40532c7d827bf8a4193?utm_source=blast"
+                                },
+                                "acrID": {
+                                    "type": "string",
+                                    "example": "34c85975f790e40532c7d827bf8a4193"
+                                },
+                                "Metadata": {
+                                    "type": "object",
+                                    "properties": {
+                                        "deezerURL": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "deezerID": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "soundcloudURL": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "soundcloudID": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "spotifyURL": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "spotifyID": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "youtubeURL": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "youtubeID": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "tidalURL": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "tidalID": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "applemusicURL": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "applemusicID": {
+                                            "type": "string",
+                                            "example": ""
+                                        }
+                                    }
+                                },
+                                "Comment": {
+                                    "type": "object",
+                                    "properties": {
+                                        "commentID": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": "52033839"
+                                        },
+                                        "CreatedAt": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2021-10-16T22:21:55.45Z"
+                                        },
+                                        "UpdatedAt": {
+                                            "type": "string",
+                                            "example": "2021-10-16T23:12:03.105Z"
+                                        },
+                                        "DeletedAt": {
+                                            "type": "string",
+                                            "format": "nullable"
+                                        },
+                                        "up": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": "1"
+                                        },
+                                        "down": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": "0"
+                                        },
+                                        "content": {
+                                            "type": "string",
+                                            "example": "Es wurden folgende Informationen dazu gefunden:\n      Waves Pt. II - Outgrown\n      Aus dem Album: Shortcomings EP\n\n      Hier ist ein Link: https://pr0sauce.info/78537d471fa034ec3eb2bb1e035b58bb\n      Zeitpunkt der Überprüfung 17.10.2021 um 00:11"
+                                        },
+                                        "created": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2021-10-16T22:19:50Z"
+                                        },
+                                        "itemID": {
+                                            "type": "integer",
+                                            "format": "int32",
+                                            "example": "4812613"
+                                        },
+                                        "thumb": {
+                                            "type": "string",
+                                            "example": "2021/10/17/eab648c5788e8751.jpg"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/item/{id}": {
+      "get": {
+        "description": "Retrieve all metadata for a specific ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "example": "6143"
+            },
+            "description": "ID of the metadata"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response of the items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "6143"
+                    },
+                    "CreatedAt": {
+                      "type": "string",
+                      "example": "0001-01-01T00:00:00Z",
+                      "description": "Right now not in use",
+                      "deprecated": true
+                    },
+                    "UpdatedAt": {
+                      "type": "string",
+                      "example": "0001-01-01T00:00:00Z",
+                      "description": "Right now not in use",
+                      "deprecated": true
+                    },
+                    "DeletedAt": {
+                      "type": "string",
+                      "format": "nullable",
+                      "description": "Right now not in use",
+                      "deprecated": true
+                    },
+                    "itemID": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "4303620",
+                      "description": "ItemID of the pr0gramm post"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Greetings"
+                    },
+                    "album": {
+                      "type": "string",
+                      "example": "Flexed Up"
+                    },
+                    "artist": {
+                      "type": "string",
+                      "example": "StickyNote"
+                    },
+                    "url": {
+                      "type": "string",
+                      "example": "https://pr0sauce.info/744f55376e3fd73ac49bd8dbd68e43fa"
+                    },
+                    "acrID": {
+                      "type": "string",
+                      "example": "744f55376e3fd73ac49bd8dbd68e43fa",
+                      "description": "ID returned by ACRCloud"
+                    },
+                    "Metadata": {
+                      "type": "object",
+                      "properties": {
+                        "deezerURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "deezerID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "soundcloudURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "soundcloudID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "spotifyURL": {
+                          "type": "string",
+                          "example": "https://open.spotify.com/track/4UPyeE8tJcEeP8uuWl1y1H"
+                        },
+                        "spotifyID": {
+                          "type": "string",
+                          "example": "SPOTIFY_SONG::4UPyeE8tJcEeP8uuWl1y1H"
+                        },
+                        "youtubeURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "youtubeID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "tidalURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "tidalID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "applemusicURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "applemusicID": {
+                          "type": "string",
+                          "example": ""
+                        }
+                      }
+                    },
+                    "Comment": {
+                      "type": "object",
+                      "description": "This can be empty because the Bot is crawling all comments every 5 minutes!",
+                      "properties": {
+                        "commentID": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "52033711"
+                        },
+                        "CreatedAt": {
+                          "type": "string",
+                          "example": "2021-10-16T22:21:55.433Z"
+                        },
+                        "UpdatedAt": {
+                          "type": "string",
+                          "example": "2021-10-16T22:31:52.805Z"
+                        },
+                        "DeletedAt": {
+                          "type": "string",
+                          "format": "nullable"
+                        },
+                        "up": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "1"
+                        },
+                        "down": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "0"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "Es wurden folgende Informationen dazu gefunden:\n      Greetings - StickyNote\n      Aus dem Album: Flexed Up\n\n      Hier ist ein Link: https://pr0sauce.info/744f55376e3fd73ac49bd8dbd68e43fa\n      Zeitpunkt der Überprüfung 17.10.2021 um 00:13"
+                        },
+                        "created": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2021-10-16T22:13:16Z"
+                        },
+                        "itemID": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "4303620"
+                        },
+                        "thumb": {
+                          "type": "string",
+                          "example": "2020/12/21/3374d42a836426ea.jpg"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info/{acrid}": {
+      "get": {
+        "description": "Retrieve metadata by ACR ID",
+        "parameters": [
+          {
+            "name": "acrid",
+            "in": "path",
+            "required": true,
+            "schema": {
+                "type": "string",
+                "example": "34c85975f790e40532c7d827bf8a4193"
+            },
+            "description": "ACR ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response of the metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "6146"
+                    },
+                    "CreatedAt": {
+                        "type": "string",
+                        "example": "0001-01-01T00:00:00Z"
+                    },
+                    "UpdatedAt": {
+                        "type": "string",
+                        "example": "0001-01-01T00:00:00Z"
+                    },
+                    "DeletedAt": {
+                        "type": "string",
+                        "format": "nullable"
+                    },
+                    "itemID": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "4812613"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Ring Ding Dong (Nhạc chuông)"
+                    },
+                    "album": {
+                        "type": "string",
+                        "example": "Ring Ding Dong (Nhạc chuông)"
+                    },
+                    "artist": {
+                        "type": "string",
+                        "example": "SHINee"
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "https://www.aha-music.com/34c85975f790e40532c7d827bf8a4193?utm_source=blast"
+                    },
+                    "acrID": {
+                        "type": "string",
+                        "example": "34c85975f790e40532c7d827bf8a4193"
+                    },
+                    "Metadata": {
+                        "type": "object",
+                        "properties": {
+                            "deezerURL": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "deezerID": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "soundcloudURL": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "soundcloudID": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "spotifyURL": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "spotifyID": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "youtubeURL": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "youtubeID": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "tidalURL": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "tidalID": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "applemusicURL": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "applemusicID": {
+                                "type": "string",
+                                "example": ""
+                            }
+                        }
+                    },
+                    "Comment": {
+                        "type": "object",
+                        "properties": {
+                            "commentID": {
+                                "type": "integer",
+                                "format": "int32",
+                                "example": "52033839"
+                            },
+                            "CreatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2021-10-16T22:21:55.45Z"
+                            },
+                            "UpdatedAt": {
+                                "type": "string",
+                                "example": "2021-10-16T23:12:03.105Z"
+                            },
+                            "DeletedAt": {
+                                "type": "string",
+                                "format": "nullable"
+                            },
+                            "up": {
+                                "type": "integer",
+                                "format": "int32",
+                                "example": "1"
+                            },
+                            "down": {
+                                "type": "integer",
+                                "format": "int32",
+                                "example": "0"
+                            },
+                            "content": {
+                                "type": "string",
+                                "example": "Es wurden folgende Informationen dazu gefunden:\n      Ring Ding Dong (Nhạc chuông) - SHINee\n      Aus dem Album: Ring Ding Dong (Nhạc chuông)\n\n      Hier ist ein Link: https://pr0sauce.info/34c85975f790e40532c7d827bf8a4193\n      Zeitpunkt der Überprüfung 17.10.2021 um 00:19"
+                            },
+                            "created": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2021-10-16T22:19:50Z"
+                            },
+                            "itemID": {
+                                "type": "integer",
+                                "format": "int32",
+                                "example": "4812613"
+                            },
+                            "thumb": {
+                                "type": "string",
+                                "example": "2021/10/17/eab648c5788e8751.jpg"
+                            }
+                        }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "description": "Retrieve Stats from the current month or by defining a start and end date",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+                "type": "string",
+                "example": "2021-09-01"
+            },
+            "description": "Start date in the format YYYY-MM-DD"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+                "type": "string",
+                "example": "2021-10-01"
+            },
+            "description": "End date in the format YYYY-MM-DD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response of stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "386999"
+                                },
+                                "uid": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "119144"
+                                },
+                                "date": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "example": "2021-09-01"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "example": "AVR"
+                                },
+                                "region": {
+                                    "type": "string",
+                                    "example": "eu-west-1"
+                                },
+                                "access_key": {
+                                    "type": "string",
+                                    "example": "0938b8990ec92a63d4688c19951b9eb8"
+                                },
+                                "result": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "45"
+                                },
+                                "noresult": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "14"
+                                },
+                                "error": {
+                                    "type": "integer",
+                                    "format": "int32",
+                                    "example": "0"
+                                },
+                                "created_at": {
+                                    "type": "string",
+                                    "example": "2021-09-01T04:11:12.000000Z"
+                                }
+                            }
+                        }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
