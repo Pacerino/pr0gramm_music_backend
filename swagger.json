@@ -1,15 +1,20 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "pr0sauce Backend API",
+    "title": "pr0sauce API Backend Documentation",
     "version": "1.0",
-    "description": "API Documentation for the API Backend of the pr0sauce.info site and the @sauce bot"
+    "contact": {
+      "name": "Helix",
+      "url": "https://pr0gramm.com/user/Helix"
+    },
+    "description": "API documentation for the backend of the [pr0gramm.com](https://pr0sauce.info) website and the [bot](https://pr0gramm.com/user/sauce) on [pr0gramm.com](https://pr0gramm.com)"
   },
   "servers": [{ "url": "https://pr0.pa0x43.me/" }],
   "paths": {
     "/items": {
       "get": {
-        "description": "Retrieve all items",
+        "summary": "All Items",
+        "description": "Get all the items. By using `page` you can change the current page.",
         "parameters": [
           {
             "name": "page",
@@ -29,7 +34,7 @@
               "type": "number",
               "default": "10"
             },
-            "description": "Limit of shown items"
+            "description": "Limit of items to be displayed"
           },
           {
             "name": "sort",
@@ -45,7 +50,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Response of the rows",
+            "description": "Response with the items as `rows` array",
             "content": {
               "application/json": {
                 "schema": {
@@ -54,29 +59,35 @@
                     "limit": {
                         "type": "integer",
                         "format": "int32",
-                        "example": "10"
+                        "example": "10",
+                        "description": "Current limit"
                     },
                     "page": {
                         "type": "integer",
                         "format": "int32",
-                        "example": "1"
+                        "example": "1",
+                        "description": "Current page"
                     },
                     "sort": {
                         "type": "string",
-                        "example": "id asc"
+                        "example": "id asc",
+                        "description": "Sorting order"
                     },
                     "total_rows": {
                         "type": "integer",
                         "format": "int32",
-                        "example": "6147"
+                        "example": "6147",
+                        "description": "Number of all items in the database"
                     },
                     "total_pages": {
                         "type": "integer",
                         "format": "int32",
-                        "example": "615"
+                        "example": "615",
+                        "description": "Number of pages with the current `limit` setting"
                     },
                     "rows": {
                         "type": "array",
+                        "description": "Items as object array",
                         "items": {
                             "type": "object",
                             "properties": {
@@ -239,7 +250,8 @@
     },
     "/item/{id}": {
       "get": {
-        "description": "Retrieve all metadata for a specific ID",
+        "summary": "Metadata by ID",
+        "description": "Get the metadata based on the ID in the database. **Attention**: The `ItemID` of the pr0gramm post is not meant here!",
         "parameters": [
           {
             "name": "id",
@@ -249,12 +261,12 @@
               "type": "number",
               "example": "6143"
             },
-            "description": "ID of the metadata"
+            "description": "Metadata ID"
           }
         ],
         "responses": {
           "200": {
-            "description": "Response of the items",
+            "description": "Metadata response",
             "content": {
               "application/json": {
                 "schema": {
@@ -268,26 +280,26 @@
                     "CreatedAt": {
                       "type": "string",
                       "example": "0001-01-01T00:00:00Z",
-                      "description": "Right now not in use",
+                      "description": "Currently not in use!",
                       "deprecated": true
                     },
                     "UpdatedAt": {
                       "type": "string",
                       "example": "0001-01-01T00:00:00Z",
-                      "description": "Right now not in use",
+                      "description": "Currently not in use!",
                       "deprecated": true
                     },
                     "DeletedAt": {
                       "type": "string",
                       "format": "nullable",
-                      "description": "Right now not in use",
+                      "description": "Currently not in use!",
                       "deprecated": true
                     },
                     "itemID": {
                       "type": "integer",
                       "format": "int32",
                       "example": "4303620",
-                      "description": "ItemID of the pr0gramm post"
+                      "description": "ItemID from the pr0gramm post"
                     },
                     "title": {
                       "type": "string",
@@ -365,7 +377,7 @@
                     },
                     "Comment": {
                       "type": "object",
-                      "description": "This can be empty because the Bot is crawling all comments every 5 minutes!",
+                      "description": "This object could be Empty, because the bot fetches the comments in a 5 minute interval and then adds them to the associated metadata!",
                       "properties": {
                         "commentID": {
                           "type": "integer",
@@ -424,7 +436,8 @@
     },
     "/info/{acrid}": {
       "get": {
-        "description": "Retrieve metadata by ACR ID",
+        "summary": "Metadata by ACR ID",
+        "description": "Get metadata based on the ACR ID.",
         "parameters": [
           {
             "name": "acrid",
@@ -439,7 +452,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Response of the metadata",
+            "description": "Metadata response",
             "content": {
               "application/json": {
                 "schema": {
@@ -451,16 +464,22 @@
                         "example": "6146"
                     },
                     "CreatedAt": {
-                        "type": "string",
-                        "example": "0001-01-01T00:00:00Z"
+                      "type": "string",
+                      "example": "0001-01-01T00:00:00Z",
+                      "description": "Currently not in use!",
+                      "deprecated": true
                     },
                     "UpdatedAt": {
-                        "type": "string",
-                        "example": "0001-01-01T00:00:00Z"
+                      "type": "string",
+                      "example": "0001-01-01T00:00:00Z",
+                      "description": "Currently not in use!",
+                      "deprecated": true
                     },
                     "DeletedAt": {
-                        "type": "string",
-                        "format": "nullable"
+                      "type": "string",
+                      "format": "nullable",
+                      "description": "Currently not in use!",
+                      "deprecated": true
                     },
                     "itemID": {
                         "type": "integer",
@@ -542,6 +561,7 @@
                     },
                     "Comment": {
                         "type": "object",
+                        "description": "This object could be Empty, because the bot fetches the comments in a 5 minute interval and then adds them to the associated metadata!",
                         "properties": {
                             "commentID": {
                                 "type": "integer",
@@ -601,7 +621,8 @@
     },
     "/stats": {
       "get": {
-        "description": "Retrieve Stats from the current month or by defining a start and end date",
+        "summary": "Get the statistics",
+        "description": "Get the statistics of all requests to the ACR database. The current day is generated only at midnight and is therefore not yet recorded! The parameter `end` can only be passed in connection with `start`. On the other hand, `start` can also be passed separately. Then the current day is inserted automatically as end date!",
         "parameters": [
           {
             "name": "start",
@@ -611,7 +632,7 @@
                 "type": "string",
                 "example": "2021-09-01"
             },
-            "description": "Start date in the format YYYY-MM-DD"
+            "description": "Start date in the format `YYYY-MM-DD`"
           },
           {
             "name": "end",
@@ -621,12 +642,12 @@
                 "type": "string",
                 "example": "2021-10-01"
             },
-            "description": "End date in the format YYYY-MM-DD"
+            "description": "End date in the format `YYYY-MM-DD`"
           }
         ],
         "responses": {
           "200": {
-            "description": "Response of stats",
+            "description": "Statistics response",
             "content": {
               "application/json": {
                 "schema": {
