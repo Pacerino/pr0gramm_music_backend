@@ -434,6 +434,192 @@
         }
       }
     },
+    "/find/{id}": {
+      "get": {
+        "summary": "Metadata by ItemID",
+        "description": "Get the metadata based on the pr0gramm ItemID in the database.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "example": "4409819"
+            },
+            "description": "Pr0gramm ItemID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "6143"
+                    },
+                    "CreatedAt": {
+                      "type": "string",
+                      "example": "0001-01-01T00:00:00Z",
+                      "description": "Currently not in use!",
+                      "deprecated": true
+                    },
+                    "UpdatedAt": {
+                      "type": "string",
+                      "example": "0001-01-01T00:00:00Z",
+                      "description": "Currently not in use!",
+                      "deprecated": true
+                    },
+                    "DeletedAt": {
+                      "type": "string",
+                      "format": "nullable",
+                      "description": "Currently not in use!",
+                      "deprecated": true
+                    },
+                    "itemID": {
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "4303620",
+                      "description": "ItemID from the pr0gramm post"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Greetings"
+                    },
+                    "album": {
+                      "type": "string",
+                      "example": "Flexed Up"
+                    },
+                    "artist": {
+                      "type": "string",
+                      "example": "StickyNote"
+                    },
+                    "url": {
+                      "type": "string",
+                      "example": "https://pr0sauce.info/744f55376e3fd73ac49bd8dbd68e43fa"
+                    },
+                    "acrID": {
+                      "type": "string",
+                      "example": "744f55376e3fd73ac49bd8dbd68e43fa",
+                      "description": "ID returned by ACRCloud"
+                    },
+                    "Metadata": {
+                      "type": "object",
+                      "properties": {
+                        "deezerURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "deezerID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "soundcloudURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "soundcloudID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "spotifyURL": {
+                          "type": "string",
+                          "example": "https://open.spotify.com/track/4UPyeE8tJcEeP8uuWl1y1H"
+                        },
+                        "spotifyID": {
+                          "type": "string",
+                          "example": "SPOTIFY_SONG::4UPyeE8tJcEeP8uuWl1y1H"
+                        },
+                        "youtubeURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "youtubeID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "tidalURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "tidalID": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "applemusicURL": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "applemusicID": {
+                          "type": "string",
+                          "example": ""
+                        }
+                      }
+                    },
+                    "Comment": {
+                      "type": "object",
+                      "description": "This object could be Empty, because the bot fetches the comments in a 5 minute interval and then adds them to the associated metadata!",
+                      "properties": {
+                        "commentID": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "52033711"
+                        },
+                        "CreatedAt": {
+                          "type": "string",
+                          "example": "2021-10-16T22:21:55.433Z"
+                        },
+                        "UpdatedAt": {
+                          "type": "string",
+                          "example": "2021-10-16T22:31:52.805Z"
+                        },
+                        "DeletedAt": {
+                          "type": "string",
+                          "format": "nullable"
+                        },
+                        "up": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "1"
+                        },
+                        "down": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "0"
+                        },
+                        "content": {
+                          "type": "string",
+                          "example": "Es wurden folgende Informationen dazu gefunden:\n      Greetings - StickyNote\n      Aus dem Album: Flexed Up\n\n      Hier ist ein Link: https://pr0sauce.info/744f55376e3fd73ac49bd8dbd68e43fa\n      Zeitpunkt der Überprüfung 17.10.2021 um 00:13"
+                        },
+                        "created": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2021-10-16T22:13:16Z"
+                        },
+                        "itemID": {
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "4303620"
+                        },
+                        "thumb": {
+                          "type": "string",
+                          "example": "2020/12/21/3374d42a836426ea.jpg"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/info/{acrid}": {
       "get": {
         "summary": "Metadata by ACR ID",
