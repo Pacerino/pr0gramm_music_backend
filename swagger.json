@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.2",
+  "openapi": "3.1.0",
   "info": {
     "title": "pr0sauce API Backend Documentation",
     "version": "1.0",
@@ -7,9 +7,9 @@
       "name": "Helix",
       "url": "https://pr0gramm.com/user/Helix"
     },
-    "description": "API documentation for the backend of the [pr0sauce.info](https://pr0sauce.info) website and the [bot](https://pr0gramm.com/user/sauce) on [pr0gramm.com](https://pr0gramm.com)"
+    "description": "API documentation for the backend of the [pr0sauce.info](https://pr0sauce.info) website and the [bot](https://pr0gramm.com/user/sauce) on [pr0gramm.com](https://pr0gramm.com). **The API has a rate limit of `30req/min`. If you need more, contact [Helix](https://pr0gramm.com/user/Helix)**"
   },
-  "servers": [{ "url": "https://pr0.pa0x43.me/" }],
+  "servers": [{ "url": "https://api.pr0sauce.info/" }],
   "paths": {
     "/items": {
       "get": {
