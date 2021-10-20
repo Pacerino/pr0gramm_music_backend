@@ -7,7 +7,7 @@
       "name": "Helix",
       "url": "https://pr0gramm.com/user/Helix"
     },
-    "description": "API documentation for the backend of the [pr0gramm.com](https://pr0sauce.info) website and the [bot](https://pr0gramm.com/user/sauce) on [pr0gramm.com](https://pr0gramm.com)"
+    "description": "API documentation for the backend of the [pr0sauce.info](https://pr0sauce.info) website and the [bot](https://pr0gramm.com/user/sauce) on [pr0gramm.com](https://pr0gramm.com)"
   },
   "servers": [{ "url": "https://pr0.pa0x43.me/" }],
   "paths": {
