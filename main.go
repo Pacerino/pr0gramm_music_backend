@@ -66,6 +66,8 @@ func main() {
 	router := mux.NewRouter()
 	// Read
 	router.HandleFunc("/item/{Id}", getItem).Methods("GET")
+	// Read by pr0gramm ItemID
+	router.HandleFunc("/find/{ItemID}", getByItemID).Methods("GET")
 	// Read-all
 	router.HandleFunc("/items", getItems).Methods("GET")
 	// Return Stats
@@ -124,6 +126,16 @@ func getItem(w http.ResponseWriter, r *http.Request) {
 
 	var items Items
 	db.Preload("Comments").First(&items, id)
+	json.NewEncoder(w).Encode(items)
+}
+
+func getByItemID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	id := params["ItemID"]
+
+	var items Items
+	db.Preload("Comments").Where("items.item_id = ?", id).First(&items)
 	json.NewEncoder(w).Encode(items)
 }
 
