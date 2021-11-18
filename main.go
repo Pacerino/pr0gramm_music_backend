@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/onrik/logrus/sentry"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/go-rod/rod"
@@ -52,17 +51,6 @@ func main() {
 	})
 	log.SetReportCaller(true)
 
-	sentryHook, err := sentry.NewHook(sentry.Options{
-		Dsn: os.Getenv("SENTRY_DSN"),
-	}, log.PanicLevel, log.FatalLevel, log.ErrorLevel)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	defer sentryHook.Flush()
-
-	log.AddHook(sentryHook)
-
 	router := mux.NewRouter()
 	// Read
 	router.HandleFunc("/item/{Id}", getItem).Methods("GET")
@@ -79,7 +67,7 @@ func main() {
 	initDB()
 
 	ctab := crontab.New()
-	err = ctab.AddJob(os.Getenv("CRONJOB"), goThroughBotComments)
+	err := ctab.AddJob(os.Getenv("CRONJOB"), goThroughBotComments)
 	if err != nil {
 		log.WithError(err).Fatal("Could not add cronjob!")
 	}
